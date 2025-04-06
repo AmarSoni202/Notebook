@@ -7,8 +7,7 @@
 
 import UIKit
 
-extension UIViewController {
-    func goBack() {
-        navigationController?.popViewController(animated: true)
-    }
+enum AppStoryboard: String {
+    case Home
 }
+

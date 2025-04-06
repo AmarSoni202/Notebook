@@ -9,9 +9,9 @@ import Foundation
 import CoreData
 
 protocol NotesRepositoryProtocol {
-    func createNotes(Notes: NotesDataModel)
+    func createNotes(notes: NotesDataModel)
     func getAllNotes() -> [NotesDataModel]
-    func updateNotes(Notes: NotesDataModel)
+    func updateNotes(notes: NotesDataModel)
     func deleteNotes(id: UUID)
 }
 
@@ -20,12 +20,14 @@ struct NotesRepository: NotesRepositoryProtocol {
 
     private let coreDataManager = CoreDataManager()
 
-    func createNotes(Notes: NotesDataModel) {
-        let notes = CDNotes(context: coreDataManager.context)
-        notes.id = notes.id ?? UUID()
-        notes.title = Notes.title
-        notes.content = Notes.content
-        notes.date = Date()
+    func createNotes(notes: NotesDataModel) {
+        let noteObj = CDNotes(context: coreDataManager.context)
+        noteObj.id = notes.id
+        noteObj.title = notes.title
+        noteObj.content = notes.content
+        noteObj.date = Date()
+        noteObj.height = Float(notes.height ?? 0.0)
+        noteObj.width = Float(notes.width ?? 0.0)
         coreDataManager.saveContext()
     }
     
@@ -39,19 +41,23 @@ struct NotesRepository: NotesRepositoryProtocol {
             notesDataModel.append(NotesDataModel(id: $0.id ?? UUID(),
                                                  title: $0.title ?? "",
                                                  content: $0.content ?? "",
-                                                 date: $0.date ?? Date()))
+                                                 date: $0.date ?? Date(),
+                                                 height: CGFloat($0.height),
+                                                 width: CGFloat($0.width)))
         }
         print(notes)
         return notesDataModel
     }
 
-    func updateNotes(Notes: NotesDataModel) {
-        guard let noteToUpdate = getNoteByID(Notes.id) else {
+    func updateNotes(notes: NotesDataModel) {
+        guard let noteToUpdate = getNoteByID(notes.id) else {
             return
         }
 
-        noteToUpdate.title = Notes.title
-        noteToUpdate.content = Notes.content
+        noteToUpdate.title = notes.title
+        noteToUpdate.content = notes.content
+        noteToUpdate.height = Float(notes.height ?? 0.0)
+        noteToUpdate.width = Float(notes.width ?? 0.0)
         coreDataManager.saveContext()
     }
 

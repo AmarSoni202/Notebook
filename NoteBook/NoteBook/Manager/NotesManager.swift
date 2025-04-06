@@ -11,7 +11,7 @@ struct NotesManager {
     private let notesRepository = NotesRepository()
     
     func createNote(note: NotesDataModel) {
-        notesRepository.createNotes(Notes: note)
+        notesRepository.createNotes(notes: note)
     }
 
     func getAllNotes() -> [NotesDataModel] {
@@ -19,7 +19,7 @@ struct NotesManager {
     }
 
     func updateNote(note: NotesDataModel) {
-        notesRepository.updateNotes(Notes: note)
+        notesRepository.updateNotes(notes: note)
     }
 
     func deleteNote(by id: UUID) {

@@ -20,6 +20,7 @@ class AddNotesViewController: UIViewController {
     private let notesManager = NotesManager()
     var note: NotesDataModel?
     var isEditNote: Bool = false
+    var textSize: CGSize?
     
     // MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -41,12 +42,16 @@ class AddNotesViewController: UIViewController {
             let note = NotesDataModel(id: note?.id ?? UUID(),
                                       title: titleTextfield.text,
                                       content: contentTextView.text,
-                                      date: note?.date ?? Date())
+                                      date: note?.date ?? Date(),
+                                      height: (textSize?.height ?? 0.0 >= 108) ? 162 : (textSize?.height ?? 0.0) + 54,
+                                      width: view.frame.width)
             notesManager.updateNote(note: note)
         } else {
             let note = NotesDataModel(title: titleTextfield.text,
                                       content: contentTextView.text,
-                                      date: Date())
+                                      date: Date(),
+                                      height: (textSize?.height ?? 0.0 >= 108) ? 162 : (textSize?.height ?? 0.0) + 54,
+                                      width: view.frame.width)
             notesManager.createNote(note: note)
         }
         self.goBack()
@@ -94,10 +99,18 @@ extension AddNotesViewController {
         let formattedDate = dateFormatter.string(from: date)
         return formattedDate
     }
+
+    func calculateTextViewHeight(textView: UITextView) -> CGSize {
+        let size = CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude)
+        let estimatedSize = textView.sizeThatFits(size)
+        return estimatedSize
+    }
 }
 
 extension AddNotesViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         configureUI()
+        let size = calculateTextViewHeight(textView: textView)
+        self.textSize = size
     }
 }

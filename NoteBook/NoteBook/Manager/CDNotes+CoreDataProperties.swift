@@ -2,7 +2,7 @@
 //  CDNotes+CoreDataProperties.swift
 //  NoteBook
 //
-//  Created by Amar Soni on 20/03/25.
+//  Created by Amar Soni on 01/04/25.
 //
 //
 
@@ -16,10 +16,12 @@ extension CDNotes {
         return NSFetchRequest<CDNotes>(entityName: "CDNotes")
     }
 
-    @NSManaged public var id: UUID?
-    @NSManaged public var title: String?
     @NSManaged public var content: String?
     @NSManaged public var date: Date?
+    @NSManaged public var id: UUID?
+    @NSManaged public var title: String?
+    @NSManaged public var height: Float
+    @NSManaged public var width: Float
 
 }
 

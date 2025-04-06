@@ -7,9 +7,11 @@
 
 import Foundation
 
-struct NotesDataModel: Identifiable {
+struct NotesDataModel: Identifiable, Hashable {
     var id: UUID = UUID()
     var title: String?
     var content: String?
     var date: Date = Date()
+    var height: CGFloat?
+    var width: CGFloat?
 }
