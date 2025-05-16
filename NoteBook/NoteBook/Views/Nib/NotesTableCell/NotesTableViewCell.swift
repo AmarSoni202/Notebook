@@ -14,36 +14,49 @@ class NotesTableViewCell: UITableViewCell {
     @IBOutlet weak private var cellBackgroundView: UIView!
     @IBOutlet weak private var titleLabel: UILabel!
     @IBOutlet weak private var contentLabel: UILabel!
+    @IBOutlet weak private var selectButton: UIButton!
     
-    var editAction: Action?
+    // var editAction: Action?
     var deleteAction: Action?
+    var selectCell: Action?
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         addShadow()
+        setInitials()
         configureCell()
     }
 
     @IBAction private func editButton(_ sender: Any) {
-        editAction?()
+        // editAction?()
     }
 
-    @IBAction private func deleteButton(_ sender: Any) {
-        deleteAction?()
+    @IBAction func selectButtonAction(_ sender: Any) {
+        selectCell?()
     }
 }
 
 // MARK: - Data Handler
 extension NotesTableViewCell {
-    func setData(model: NotesDataModel) {
+    func setData(model: NotesDataModel, multipleSelection: Bool = false) {
         titleLabel.text = model.title?.isEmpty ?? true ? "Untitled" : model.title
         contentLabel.text = model.content
+        selectButton.isHidden = !multipleSelection
+        setSelectButtonImage(model: model)
+    }
+
+    func setSelectButtonImage(model: NotesDataModel) {
+        selectButton.setImage(model.isSelected ? UIImage.circleCheck : UIImage.circle, for: .normal)
     }
 }
 
 // MARK: - UI Configuration
 extension NotesTableViewCell {
+
+    func setInitials() {
+        selectButton.isHidden = true
+    }
 
     func addShadow() {
         cellBackgroundView.layer.shadowColor = UIColor.black.cgColor

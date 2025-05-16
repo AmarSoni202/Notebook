@@ -19,13 +19,54 @@ class HomeViewModel: NSObject {
     var dataSource: DataSource?
 
     private var snapshot = DataSourceSnapshot()
+    private var noteDataList = [NotesDataModel]()
     var notesManager = NotesManager()
 
-    func applySnapshot() {
-        let notes = notesManager.getAllNotes()
+    func loadDatafromCordata() {
+        noteDataList = notesManager.getAllNotes().reversed()
+        applySnapshot()
+    }
+
+    func getNoteListCount() -> Int {
+        noteDataList.count
+    }
+
+    func getNoteListData() -> [NotesDataModel] {
+        noteDataList
+    }
+
+    func updateNotesOnLongPress(at index: Int) {
+        self.noteDataList[index].isSelected.toggle()
+    }
+
+    func getSelectedNotes() -> (count :Int, selectedNotes: [NotesDataModel]) {
+        return (noteDataList.filter({$0.isSelected}).count,
+                noteDataList.filter({$0.isSelected}))
+    }
+
+    func cancelSelection() {
+        self.noteDataList.enumerated().forEach { index, _ in
+            self.noteDataList[index].isSelected = false
+        }
+    }
+
+    func deleteSelectedNotes() {
+        noteDataList.forEach { notes in
+            if notes.isSelected {
+                notesManager.deleteNote(by: notes.id)
+            }
+        }
+        loadDatafromCordata()
+    }
+
+    func checkUpdateByCount() -> Bool {
+        noteDataList.count != notesManager.getAllNotes().count
+    }
+
+    private func applySnapshot() {
         self.snapshot.deleteAllItems()
         self.snapshot.appendSections(Section.allCases)
-        self.snapshot.appendItems(notes)
+        self.snapshot.appendItems(noteDataList)
         dataSource?.apply(snapshot, animatingDifferences: true)
     }
 }

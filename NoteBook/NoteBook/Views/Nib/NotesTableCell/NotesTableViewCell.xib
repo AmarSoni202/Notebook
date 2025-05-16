@@ -21,7 +21,7 @@
                         <rect key="frame" x="12" y="6" width="357" height="98"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zgi-1Y-bFo">
-                                <rect key="frame" x="12" y="12" width="39.333333333333336" height="18"/>
+                                <rect key="frame" x="12" y="12" width="297" height="18"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="18" id="3FJ-uo-d3K"/>
                                 </constraints>
@@ -29,6 +29,23 @@
                                 <color key="textColor" name="primaryBlack"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="WIq-yY-H46">
+                                <rect key="frame" x="321" y="6" width="24" height="24"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hsO-2g-eWI">
+                                        <rect key="frame" x="0.0" y="0.0" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="9qj-bE-DLJ"/>
+                                            <constraint firstAttribute="width" constant="24" id="MPk-ru-kby"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" image="circle"/>
+                                        <connections>
+                                            <action selector="selectButtonAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="LR4-gI-Y42"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qRO-Wb-pmW">
                                 <rect key="frame" x="0.0" y="36" width="357" height="1"/>
                                 <color key="backgroundColor" name="borderColor"/>
@@ -48,6 +65,7 @@
                         </subviews>
                         <color key="backgroundColor" name="primaryWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="WIq-yY-H46" secondAttribute="trailing" constant="12" id="1cw-zi-9yY"/>
                             <constraint firstItem="Zgi-1Y-bFo" firstAttribute="top" secondItem="hcw-bL-vYY" secondAttribute="top" constant="12" id="6wM-VF-eP3"/>
                             <constraint firstItem="Zgi-1Y-bFo" firstAttribute="leading" secondItem="hcw-bL-vYY" secondAttribute="leading" constant="12" id="9tc-fr-bDq"/>
                             <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="4wp-Jv-KPp" secondAttribute="bottom" constant="12" id="Fvb-28-yMQ"/>
@@ -57,26 +75,17 @@
                             <constraint firstAttribute="trailing" secondItem="qRO-Wb-pmW" secondAttribute="trailing" id="lKV-nG-EfQ"/>
                             <constraint firstItem="4wp-Jv-KPp" firstAttribute="top" secondItem="qRO-Wb-pmW" secondAttribute="bottom" constant="6" id="qjj-m8-aKy"/>
                             <constraint firstItem="qRO-Wb-pmW" firstAttribute="top" secondItem="Zgi-1Y-bFo" secondAttribute="bottom" constant="6" id="rcP-t5-imm"/>
+                            <constraint firstItem="WIq-yY-H46" firstAttribute="leading" secondItem="Zgi-1Y-bFo" secondAttribute="trailing" constant="12" id="wit-ba-8cy"/>
+                            <constraint firstItem="WIq-yY-H46" firstAttribute="top" secondItem="hcw-bL-vYY" secondAttribute="top" constant="6" id="zHO-kC-9U3"/>
                         </constraints>
                     </view>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X1m-Kk-FUq">
-                        <rect key="frame" x="0.0" y="0.0" width="381" height="110"/>
-                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                        <connections>
-                            <action selector="editButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="uh3-d2-rtH"/>
-                        </connections>
-                    </button>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
                     <constraint firstItem="hcw-bL-vYY" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="12" id="4LB-X3-n4U"/>
-                    <constraint firstItem="X1m-Kk-FUq" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="7MM-8h-ako"/>
-                    <constraint firstAttribute="trailing" secondItem="X1m-Kk-FUq" secondAttribute="trailing" id="E1y-aM-NA0"/>
                     <constraint firstAttribute="trailing" secondItem="hcw-bL-vYY" secondAttribute="trailing" constant="12" id="FJ6-D7-14Z"/>
-                    <constraint firstItem="X1m-Kk-FUq" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="LPH-ub-ehk"/>
                     <constraint firstAttribute="bottom" secondItem="hcw-bL-vYY" secondAttribute="bottom" constant="6" id="TvQ-WD-BiM"/>
                     <constraint firstItem="hcw-bL-vYY" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="kEh-AR-nNs"/>
-                    <constraint firstAttribute="bottom" secondItem="X1m-Kk-FUq" secondAttribute="bottom" id="qEd-If-Dwj"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
@@ -85,12 +94,14 @@
             <connections>
                 <outlet property="cellBackgroundView" destination="hcw-bL-vYY" id="GMW-j4-2es"/>
                 <outlet property="contentLabel" destination="4wp-Jv-KPp" id="phC-cG-lKB"/>
+                <outlet property="selectButton" destination="hsO-2g-eWI" id="9DT-m2-cz1"/>
                 <outlet property="titleLabel" destination="Zgi-1Y-bFo" id="rla-8b-04j"/>
             </connections>
             <point key="canvasLocation" x="138.1679389312977" y="-74.647887323943664"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="circle" width="24" height="24"/>
         <namedColor name="background">
             <color red="0.98039215803146362" green="0.97647058963775635" blue="0.94117647409439087" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -14,4 +14,5 @@ struct NotesDataModel: Identifiable, Hashable {
     var date: Date = Date()
     var height: CGFloat?
     var width: CGFloat?
+    var isSelected = false
 }

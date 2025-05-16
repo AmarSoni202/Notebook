@@ -15,33 +15,57 @@ class HomeViewController: UIViewController {
     @IBOutlet weak private var notesTableView: UITableView!
     @IBOutlet weak private var notesCollectionView: UICollectionView!
     @IBOutlet weak private var layoutButton: UIButton!
+    @IBOutlet weak private var searchBarContainerView: UIView!
+    
+    @IBOutlet weak private var selectionCountContainer: UIView!
+    @IBOutlet weak private var selectedCountLabel: UILabel!
     
     private let notesmanager = NotesManager()
     private var viewModel = HomeViewModel()
+    var isHeaderHidden = false
+    private var enableMultipleSelection = false
     
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.loadDatafromCordata()
         registerCell()
         addHeaderShadow()
         configureAddNoteViewUI()
+        addGesture()
+        searchBarContainerView.isHidden = true
+        selectionCountContainer.isHidden = true
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        notesTableView.reloadData()
         setUpCollectionView()
-        viewModel.applySnapshot()
+        viewModel.loadDatafromCordata()
+        notesTableView.reloadData()
     }
-
+    
     // MARK: - @IBAction
     @IBAction private func addNoteButton(_ sender: Any) {
         openAddNotesViewController()
     }
-
+    
     @IBAction private func layoutButtonAction(_ sender: Any) {
         changeLayout()
+    }
+    
+    @IBAction func cancelSelection(_ sender: Any) {
+        viewModel.cancelSelection()
+        self.enableMultipleSelection = false
+        selectionCountContainer.isHidden = true
+        notesTableView.reloadData()
+    }
+    
+    @IBAction func deleteSelectedNotes(_ sender: Any) {
+        viewModel.deleteSelectedNotes()
+        self.enableMultipleSelection = false
+        selectionCountContainer.isHidden = true
+        self.notesTableView.reloadData()
     }
     
 }
@@ -64,8 +88,9 @@ extension HomeViewController {
                                 forCellReuseIdentifier: Constant.notesTableViewCell.rawValue)
         notesTableView.delegate = self
         notesTableView.dataSource = self
+        notesCollectionView.delegate = self
     }
-
+    
     func changeLayout() {
         let gridImage = UIImage.gridView
         let listImage = UIImage.listView
@@ -74,19 +99,76 @@ extension HomeViewController {
             notesTableView.isHidden = true
             notesCollectionView.isHidden = false
             setUpCollectionView()
-            viewModel.applySnapshot()
+            viewModel.loadDatafromCordata()
         } else {
             layoutButton.setImage(gridImage, for: .normal)
             notesTableView.isHidden = false
             notesCollectionView.isHidden = true
         }
     }
+    
+    func addGesture() {
+        let longPressGesture = UILongPressGestureRecognizer(target: self,
+                                                            action: #selector(handleLongPress(_:)))
+        self.notesTableView.addGestureRecognizer(longPressGesture)
+    }
+    
+    @objc func handleLongPress(_ gestureRecoginser: UILongPressGestureRecognizer) {
+        guard !self.enableMultipleSelection else {
+            return
+        }
+        
+        if gestureRecoginser.state == .began {
+            let point = gestureRecoginser.location(in: notesTableView)
+            if let indexPath = self.notesTableView.indexPathForRow(at: point) {
+                self.enableMultipleSelection = true
+                viewModel.updateNotesOnLongPress(at: indexPath.row)
+                selectionCountContainer.isHidden = false
+                self.updateSelectedCount()
+                self.notesTableView.reloadData()
+            }
+        }
+    }
+    
+    // MARK: - Scroll Behavior
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView,
+                                   withVelocity velocity: CGPoint,
+                                   targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        if velocity.y > 0 && !isHeaderHidden {
+            // Scrolling up - hide header
+            hideHeader()
+        } else if velocity.y < 0 {
+            // Scrolling down - show header
+            showHeader()
+        }
+    }
+    
+    func hideHeader() {
+        UIView.animate(withDuration: 0.3) {
+            self.searchBarContainerView.transform = CGAffineTransform(translationX: 0,
+                                                                      y: -self.searchBarContainerView.frame.height)
+        }
+        isHeaderHidden = true
+        self.searchBarContainerView.isHidden = isHeaderHidden
+    }
+    
+    func showHeader() {
+        UIView.animate(withDuration: 0.3) {
+            self.searchBarContainerView.transform = .identity
+        }
+        isHeaderHidden = false
+        self.searchBarContainerView.isHidden = false
+    }
+    
+    func updateSelectedCount() {
+        self.selectedCountLabel.text = "Selected \(viewModel.getSelectedNotes().count)"
+    }
 }
 
 // MARK: - UITableView
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return notesmanager.getAllNotes().count
+        return viewModel.getNoteListCount()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -96,34 +178,41 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let note = notesmanager.getAllNotes()[indexPath.row]
-        cell.setData(model: note)
-        
-        cell.editAction = { [weak self] in
-            self?.openEditNoteViewController(note: note)
-        }
+        let note = viewModel.getNoteListData()[indexPath.row]
+        cell.setData(model: note, multipleSelection: enableMultipleSelection)
+        cell.selectionStyle = .none
         cell.deleteAction = { [weak self] in
             self?.notesmanager.deleteNote(by: note.id)
             self?.notesTableView.reloadData()
         }
+        cell.selectCell = { [weak self] in
+            self?.viewModel.updateNotesOnLongPress(at: indexPath.row)
+            self?.updateSelectedCount()
+            self?.notesTableView.reloadData()
+        }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let note = viewModel.getNoteListData()[indexPath.row]
+        openEditNoteViewController(note: note)
     }
 }
 
 // MARK: - UICollectionView
-extension HomeViewController {
-
+extension HomeViewController: UICollectionViewDelegate {
+    
     func setUpCollectionView() {
         let layout = CustomCompositionalLayout.layout(
-            model: notesmanager.getAllNotes(),
+            model: viewModel.getNoteListData(),
             contentWidth: view.frame.width
         )
         notesCollectionView.collectionViewLayout = layout
         
         // Register the cell (only if not done in Interface Builder)
         notesCollectionView.register(UINib(nibName: Constant.notesCollectionViewCell.rawValue,
-                                          bundle: nil),
-                                    forCellWithReuseIdentifier: Constant.notesCollectionViewCell.rawValue)
+                                           bundle: nil),
+                                     forCellWithReuseIdentifier: Constant.notesCollectionViewCell.rawValue)
         viewModel.dataSource = DataSource(collectionView: notesCollectionView,
                                           cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
             let cell = self.notesCollectionView.dequeueReusableCell(withReuseIdentifier: Constant.notesCollectionViewCell.rawValue,
