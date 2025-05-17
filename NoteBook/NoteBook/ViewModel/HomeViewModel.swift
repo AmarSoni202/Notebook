@@ -21,9 +21,11 @@ class HomeViewModel: NSObject {
     private var snapshot = DataSourceSnapshot()
     private var noteDataList = [NotesDataModel]()
     var notesManager = NotesManager()
+    private var tempData = [NotesDataModel]()
 
     func loadDatafromCordata() {
         noteDataList = notesManager.getAllNotes().reversed()
+        self.tempData = noteDataList
         applySnapshot()
     }
 
@@ -59,8 +61,13 @@ class HomeViewModel: NSObject {
         loadDatafromCordata()
     }
 
-    func checkUpdateByCount() -> Bool {
-        noteDataList.count != notesManager.getAllNotes().count
+    func searchNotes(note text: String) {
+        if text.isEmpty {
+            noteDataList = tempData
+        } else {
+            noteDataList = tempData.filter({ $0.content?.lowercased().contains(text.lowercased()) ?? false })
+        }
+        applySnapshot()
     }
 
     private func applySnapshot() {

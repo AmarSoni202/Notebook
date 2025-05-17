@@ -19,6 +19,7 @@ class HomeViewController: UIViewController {
     
     @IBOutlet weak private var selectionCountContainer: UIView!
     @IBOutlet weak private var selectedCountLabel: UILabel!
+    @IBOutlet weak private var searchTextField: UITextField!
     
     private let notesmanager = NotesManager()
     private var viewModel = HomeViewModel()
@@ -81,6 +82,7 @@ extension HomeViewController {
     func configureAddNoteViewUI() {
         addNoteView.layer.cornerRadius = addNoteView.frame.height / 2
         layoutButton.setImage(UIImage.gridView, for: .normal)
+        searchTextField.delegate = self
     }
     
     func registerCell() {
@@ -162,6 +164,14 @@ extension HomeViewController {
     
     func updateSelectedCount() {
         self.selectedCountLabel.text = "Selected \(viewModel.getSelectedNotes().count)"
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension HomeViewController: UITextFieldDelegate {
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        viewModel.searchNotes(note: searchTextField.text ?? "")
+        if !notesTableView.isHidden { notesTableView.reloadData() }
     }
 }
 
